@@ -1,0 +1,12 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-scenari-jaxrs-connector
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.7-I20130122_0116
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: nuxeo-scenari-jaxrs-connector;singleton:=true
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=scenari;package=eu/scenari/jaxrs
+Nuxeo-Component: OSGI-INF/anonymous-login.xml
+
