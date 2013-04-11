@@ -17,6 +17,7 @@
 
 package eu.scenari.jaxrs;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
@@ -45,16 +46,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
 /**
  * HTTP API with Cross Origin Resource Sharing support to make it possible to
@@ -76,8 +77,6 @@ public class ScenariRoot extends ModuleRoot {
     protected final Set<String> authorizedOrigins = new HashSet<String>();
 
     protected CoreSession session;
-
-    protected DocumentModel zipDoc;
 
     public ScenariRoot(@Context
     HttpServletRequest request, @Context
@@ -134,8 +133,8 @@ public class ScenariRoot extends ModuleRoot {
     @POST
     @Path("/upload")
     public Object upload(InputStream input) throws URISyntaxException,
-            ClientException {
-        final Blob zipBlob = StreamingBlob.createFromStream(input);
+            ClientException, IOException {
+        final Blob zipBlob = StreamingBlob.createFromStream(input).persist();
         ZipDocumentImporter importer = new ZipDocumentImporter(session, zipBlob);
         importer.runUnrestricted();
         ResponseBuilder builder = Response.created(getImportScreenUrl(
@@ -147,7 +146,7 @@ public class ScenariRoot extends ModuleRoot {
     /* Document Import UI */
     protected URI getImportScreenUrl(String repositoryName, DocumentRef ref)
             throws URISyntaxException {
-        return new URI(String.format("%simportscreen/%s/%s", getModuleURL(),
+        return new URI(String.format("%s/importscreen/%s/%s", getModuleURL(),
                 repositoryName, ref.toString()));
     }
 
@@ -156,15 +155,11 @@ public class ScenariRoot extends ModuleRoot {
                 getContext().getModulePath());
     }
 
-    // TODO: turn me into a sub resource
-    @GET
-    @Produces("text/html;charset=utf-8")
     @Path("/importscreen/{repository}/{idref}")
-    public Object getImportScreen(@PathParam("repository")
+    public Object importScreen(@PathParam("repository")
     String repository, @PathParam("idref")
     String idRef) throws ClientException {
-        zipDoc = session.getDocument(new IdRef(idRef));
-        return getView("import_screen");
+        return new ImportScreenObject(getContext(), repository, idRef);
     }
 
     public static class ZipDocumentImporter extends UnrestrictedSessionRunner {
@@ -188,8 +183,7 @@ public class ScenariRoot extends ModuleRoot {
             zipBlobDoc = session.createDocument(zipBlobDoc);
             ACP acp = zipBlobDoc.getACP();
             ACL acl = acp.getOrCreateACL();
-            acl.add(new ACE(principal.getName(), SecurityConstants.READ_WRITE,
-                    true));
+            acl.add(new ACE(principal.getName(), READ_WRITE, true));
             acp.addACL(acl);
             documentRef = zipBlobDoc.getRef();
             session.setACP(documentRef, acp, true);

@@ -1,0 +1,9 @@
+<component name="org.nuxeo.ecm.platform.scenari.openurl">
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="openUrl">
+
+    <openUrl name="openManifestFileUrl">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/scenari/manifest</grantPattern>
+    </openUrl>
+  </extension>
+</component>
