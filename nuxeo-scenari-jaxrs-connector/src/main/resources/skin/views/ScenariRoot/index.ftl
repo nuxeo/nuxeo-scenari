@@ -22,10 +22,10 @@
 ]>
 <pushPack>
     <authentication>
-        <httpBasicAuthentication url="${This.scenariConnectorBaseUrl}"/>
+        <httpBasicAuthentication url="${This.moduleURL}"/>
     </authentication>
     <content>
-        <polyDoc/>
+        <polyDoc />
     </content>
     <protocol>
         <singleHttpRequest method="POST" mimeType="zib/binaries" url="${This.zipUploadUrl}">

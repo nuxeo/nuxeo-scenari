@@ -32,11 +32,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -67,13 +70,13 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 @WebObject(type = "ScenariRoot")
 public class ScenariRoot extends ModuleRoot {
 
-    protected final CoreSession session;
-
-    protected final String baseURL;
+    private static final Log log = LogFactory.getLog(ScenariRoot.class);
 
     protected final HttpHeaders headers;
 
     protected final Set<String> authorizedOrigins = new HashSet<String>();
+
+    protected CoreSession session;
 
     protected DocumentModel zipDoc;
 
@@ -81,11 +84,15 @@ public class ScenariRoot extends ModuleRoot {
     HttpServletRequest request, @Context
     HttpHeaders headers) {
         this.headers = headers;
-        session = SessionFactory.getSession(request);
-        baseURL = BaseURL.getBaseURL(request);
 
         // TODO: read framework property to configure authorized origins instead
         authorizedOrigins.add("*");
+
+        try {
+            session = SessionFactory.getSession(request);
+        } catch (WebApplicationException e) {
+            log.debug("Unable to instantiate CoreSession, in case of open url.");
+        }
     }
 
     @OPTIONS
@@ -98,24 +105,23 @@ public class ScenariRoot extends ModuleRoot {
 
     @GET
     @Produces("application/xml")
+    public Object getRoot() {
+        log.info("Deprecated use /manifest instead.");
+        return getManifest();
+    }
+
+    @GET
+    @Produces("application/xml")
+    @Path("/manifest")
     public Object getManifest() {
         ResponseBuilder builder = Response.ok(getView("index"));
         CorsHelper.addCORSOrigin(authorizedOrigins, builder, headers);
         return builder.build();
     }
 
-    public String getBaseNuxeoUrl() {
-        return baseURL;
-    }
-
-    public String getScenariConnectorBaseUrl() {
-        return baseURL + "site/scenari";
-    }
-
     /* ZIP Upload */
-
     public String getZipUploadUrl() {
-        return baseURL + "site/scenari/upload";
+        return String.format("%s/upload", getModuleURL());
     }
 
     @OPTIONS
@@ -126,7 +132,7 @@ public class ScenariRoot extends ModuleRoot {
         return res.build();
     }
 
-    @POST()
+    @POST
     @Path("/upload")
     public Object upload(InputStream input) throws URISyntaxException,
             ClientException {
@@ -140,16 +146,18 @@ public class ScenariRoot extends ModuleRoot {
     }
 
     /* Document Import UI */
-
     protected URI getImportScreenUrl(String repositoryName, DocumentRef ref)
             throws URISyntaxException {
-        return new URI(baseURL
-                + String.format("site/scenari/importscreen/%s/%s",
-                        repositoryName, ref.toString()));
+        return new URI(String.format("%simportscreen/%s/%s",
+                getModuleURL(), repositoryName, ref.toString()));
+    }
+
+    public String getModuleURL() {
+        return String.format("%s%s", getContext().getBaseURL(), getContext().getModulePath());
     }
 
     // TODO: turn me into a sub resource
-    @GET()
+    @GET
     @Produces("text/html;charset=utf-8")
     @Path("/importscreen/{repository}/{idref}")
     public Object getImportScreen(@PathParam("repository")
