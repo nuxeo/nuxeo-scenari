@@ -52,7 +52,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -63,7 +62,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  * let the user finish the import (select container workspace or folder, choose
  * to create as new document or updated existing document) and trigger
  * additional actions on the result.
- *
+ * 
  * @author ogrisel
  */
 @Path("/scenari")
@@ -148,12 +147,13 @@ public class ScenariRoot extends ModuleRoot {
     /* Document Import UI */
     protected URI getImportScreenUrl(String repositoryName, DocumentRef ref)
             throws URISyntaxException {
-        return new URI(String.format("%simportscreen/%s/%s",
-                getModuleURL(), repositoryName, ref.toString()));
+        return new URI(String.format("%simportscreen/%s/%s", getModuleURL(),
+                repositoryName, ref.toString()));
     }
 
     public String getModuleURL() {
-        return String.format("%s%s", getContext().getBaseURL(), getContext().getModulePath());
+        return String.format("%s%s", getContext().getBaseURL(),
+                getContext().getModulePath());
     }
 
     // TODO: turn me into a sub resource
@@ -188,7 +188,8 @@ public class ScenariRoot extends ModuleRoot {
             zipBlobDoc = session.createDocument(zipBlobDoc);
             ACP acp = zipBlobDoc.getACP();
             ACL acl = acp.getOrCreateACL();
-            acl.add(new ACE(principal.getName(), SecurityConstants.READ_WRITE, true));
+            acl.add(new ACE(principal.getName(), SecurityConstants.READ_WRITE,
+                    true));
             acp.addACL(acl);
             documentRef = zipBlobDoc.getRef();
             session.setACP(documentRef, acp, true);
