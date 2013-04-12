@@ -25,8 +25,6 @@ import org.nuxeo.runtime.api.Framework;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
 /**
- * 
- * 
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7
  */
@@ -54,7 +52,7 @@ public class ImportScreenObject extends DefaultObject {
         CoreSession coreSession = getContext().getCoreSession();
 
         DocumentModelList docs = coreSession.query("SELECT * FROM Workspace WHERE ecm:isProxy = 0 AND "
-                + "ecm:isCheckedInVersion = 0");
+                + "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'");
         for (DocumentModel doc : docs) {
             if (coreSession.hasPermission(doc.getRef(), READ_WRITE)) {
                 writableDocs.add(doc);
