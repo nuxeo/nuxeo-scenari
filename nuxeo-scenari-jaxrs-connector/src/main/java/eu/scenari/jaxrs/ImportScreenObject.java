@@ -78,7 +78,7 @@ public class ImportScreenObject extends DefaultObject {
         DocumentModel newDoc = session.createDocumentModel(workspace.getPathAsString(),
                 null, doc.getType());
 
-        doc.copyContent(newDoc);
+        newDoc.copyContent(doc);
         newDoc = session.createDocument(newDoc);
         session.removeDocument(doc.getRef());
 
