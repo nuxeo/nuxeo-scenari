@@ -9,3 +9,5 @@ bin
 .project
 .settings
 pojo-bin
+*.zip
+.DS_Store
