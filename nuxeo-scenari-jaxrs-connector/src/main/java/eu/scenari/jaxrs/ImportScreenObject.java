@@ -48,18 +48,17 @@ public class ImportScreenObject extends DefaultObject {
     }
 
     protected DocumentModelList getWritableWorkspaces() throws ClientException {
-        DocumentModelList writableDocs = new DocumentModelListImpl();
+        DocumentModelList writableWorkspaces = new DocumentModelListImpl();
         CoreSession coreSession = getContext().getCoreSession();
 
         DocumentModelList docs = coreSession.query("SELECT * FROM Workspace WHERE ecm:isProxy = 0 AND "
                 + "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'");
         for (DocumentModel doc : docs) {
             if (coreSession.hasPermission(doc.getRef(), READ_WRITE)) {
-                writableDocs.add(doc);
+                writableWorkspaces.add(doc);
             }
         }
-
-        return writableDocs;
+        return writableWorkspaces;
     }
 
     @GET
