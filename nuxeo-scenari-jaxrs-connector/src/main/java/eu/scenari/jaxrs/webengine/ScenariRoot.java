@@ -15,7 +15,7 @@
  *     ogrisel
  */
 
-package eu.scenari.jaxrs;
+package eu.scenari.jaxrs.webengine;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+
+import eu.scenari.jaxrs.utils.CorsHelper;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
@@ -135,6 +137,10 @@ public class ScenariRoot extends ModuleRoot {
     public Object upload(InputStream input) throws URISyntaxException,
             ClientException, IOException {
         final Blob zipBlob = StreamingBlob.createFromStream(input).persist();
+        if (zipBlob.getLength() < 1) {
+            return Response.noContent().build();
+        }
+
         ZipDocumentImporter importer = new ZipDocumentImporter(session, zipBlob);
         importer.runUnrestricted();
         ResponseBuilder builder = Response.created(getImportScreenUrl(
@@ -153,6 +159,14 @@ public class ScenariRoot extends ModuleRoot {
     public String getModuleURL() {
         return String.format("%s%s", getContext().getBaseURL(),
                 getContext().getModulePath());
+    }
+
+    @OPTIONS
+    @Path("/importscreen")
+    public Response handleCorsPreflightForImportScreen() {
+        ResponseBuilder res = Response.ok();
+        CorsHelper.enableCORS(authorizedOrigins, res, headers);
+        return res.build();
     }
 
     @Path("/importscreen/{repository}/{idref}")
