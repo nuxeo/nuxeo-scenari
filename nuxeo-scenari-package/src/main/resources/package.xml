@@ -3,9 +3,9 @@
   <description>
     <p>Simple Connector to allow Scenari to publish to Nuxeo.</p>
   </description>
-  <home-page>https://github.com/tiry/nuxeo-scenari</home-page>
-  <vendor>FICO</vendor>
-  <installer restart="false" />
+  <home-page>https://github.com/nuxeo/nuxeo-scenari</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
   <uninstaller restart="true" />
   <!-- <hotreload-support>true</hotreload-support> -->
   <!-- <require-terms-and-conditions-acceptance>false -->
@@ -14,11 +14,11 @@
   <production-state>testing</production-state>
   <supported>true</supported>
   <platforms>
-    <platform>cap-5.5</platform>
+    <platform>cap-5.6</platform>
   </platforms>
   <dependencies>
-    <package>nuxeo-content-browser:1.0.0:1.0.0</package>
+    <package>nuxeo-dm:5.6.0</package>
   </dependencies>
-  <license>FICO</license>
+  <license>Nuxeo</license>
   <license-url></license-url>
 </package>

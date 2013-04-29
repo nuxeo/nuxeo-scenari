@@ -19,11 +19,8 @@
     </copy>
 
     <copy todir="${maven.project.build.directory}/marketplace/install/bundles">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-scenari-connector::jar" />
+      <artifact:resolveFile key="eu.scenari:nuxeo-scenari-jaxrs-connector::jar" />
     </copy>
-    <!-- rename the Studio bundle so that it is reloadable via Admin Center -->
-    <nx:rename from="${maven.project.build.directory}/marketplace/install/bundles/FICOCMPOC*" to="${maven.project.build.directory}/marketplace/install/bundles/FICOCMPOC.jar"/>   
- 
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${maven.project.build.directory}/marketplace" />
