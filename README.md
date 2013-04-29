@@ -31,12 +31,28 @@ The file is uploaded into Nuxeo, and the response contains an url to the form to
 
     HTTP/1.1 201 Created
     Server: Apache-Coyote/1.1
-    Location: http://localhost:8080/nuxeo/site/scenari/importscreen/default/{GUID}
+    Location: http://localhost:8080/nuxeo/site/scenari/importscreen/default/{UID}
     Content-Length: 0
     
 Then, the form alow you to override or to move the file in any writable Workspace. Submitting the form answered the permalink of the file:
 
     HTTP/1.1 201 Created
     Server: Apache-Coyote/1.1
-    Location: http://localhost:8080/nxdoc/default/{GUID}/view_documents
+    Location: http://localhost:8080/nxdoc/default/{UID}/view_documents
     Content-Length: 0
+    
+## Usefull scripts
+
+There is some usefull scripts under *script* folder to simulate user action, and test http responses.
+
+**01_upload_file.sh**: Upload an archive inside Nuxeo
+
+    $ script/01_upload_file.sh test.zip
+
+**02_display_form.sh**: After getting the uploaded archive UID, assuming it's *318fbc10-14c7-4923-a173-121f45b05265*:
+
+    $ script/02_display_form.sh 318fbc10-14c7-4923-a173-121f45b05265
+
+**03_move_archive.sh**: Submiting the form to the expected workspace, assuming the workspace UID is *588dbe57-7bc4-42b1-8303-3f1b616cb7c0*
+
+    $ script/03_move_archive.sh 318fbc10-14c7-4923-a173-121f45b05265 588dbe57-7bc4-42b1-8303-3f1b616cb7c0
