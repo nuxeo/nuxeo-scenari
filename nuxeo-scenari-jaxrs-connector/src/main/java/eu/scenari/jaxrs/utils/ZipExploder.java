@@ -17,7 +17,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 
 /**
@@ -92,7 +94,10 @@ public class ZipExploder {
 
     public DocumentModel updateDocumentModel(DocumentModel parentLessDoc,
             DocumentModel targetDoc) throws ClientException {
+        DataModel uid = targetDoc.getDataModel("uid"); //Save uid datamodel, to prevent from lost it.
         targetDoc.copyContent(parentLessDoc);
+        ((DocumentModelImpl)targetDoc).addDataModel(uid);
+
         if (zip == null) {
             return targetDoc;
         }

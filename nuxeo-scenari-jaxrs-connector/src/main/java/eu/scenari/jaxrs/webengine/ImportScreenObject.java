@@ -31,7 +31,10 @@ import org.nuxeo.runtime.api.Framework;
 
 import eu.scenari.jaxrs.utils.ZipExploder;
 
+import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
+import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
+import static org.nuxeo.ecm.core.versioning.VersioningService.VERSIONING_OPTION;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -146,8 +149,13 @@ public class ImportScreenObject extends DefaultObject {
             throw new ClientException("Trying to update another document.");
         }
 
-        return session.saveDocument(zipExplorer.updateDocumentModel(doc,
-                oldScar));
+        if (oldScar.isCheckedOut()) {
+            session.checkIn(oldScar.getRef(), MINOR,
+                    "Automatic versionning before updating SCAR.");
+        }
+        DocumentModel updatedDoc = zipExplorer.updateDocumentModel(doc, oldScar);
+        updatedDoc.putContextData(VERSIONING_OPTION, MAJOR);
+        return session.saveDocument(updatedDoc);
     }
 
     protected DocumentModel createDocumentModel(String workspaceRef)
@@ -157,6 +165,7 @@ public class ImportScreenObject extends DefaultObject {
         ZipExploder ze = getZipExplorer();
         DocumentModel newDoc = session.createDocument(ze.createDocumentModel(
                 doc, workspace));
+        session.checkIn(newDoc.getRef(), MAJOR, null);
         session.removeDocument(doc.getRef());
         return newDoc;
     }
