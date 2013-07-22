@@ -17,6 +17,8 @@
 
 package eu.scenari.jaxrs.webengine;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -55,17 +57,13 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
-import eu.scenari.jaxrs.utils.CorsHelper;
-
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
-
 /**
  * HTTP API with Cross Origin Resource Sharing support to make it possible to
  * import blobs in temporary file and then redirect the client to a Web page to
  * let the user finish the import (select container workspace or folder, choose
  * to create as new document or updated existing document) and trigger
  * additional actions on the result.
- * 
+ *
  * @author ogrisel
  */
 @Path("/scenari")
@@ -98,9 +96,7 @@ public class ScenariRoot extends ModuleRoot {
     @OPTIONS
     public Response handleCorsPreflightOnManifest(@Context
     HttpHeaders headers) {
-        ResponseBuilder res = Response.ok();
-        CorsHelper.enableCORS(authorizedOrigins, res, headers);
-        return res.build();
+        return Response.ok().build();
     }
 
     @GET
@@ -115,7 +111,6 @@ public class ScenariRoot extends ModuleRoot {
     @Path("/manifest")
     public Object getManifest() {
         ResponseBuilder builder = Response.ok(getView("index"));
-        CorsHelper.addCORSOrigin(authorizedOrigins, builder, headers);
         return builder.build();
     }
 
@@ -127,9 +122,7 @@ public class ScenariRoot extends ModuleRoot {
     @OPTIONS
     @Path("/upload")
     public Response handleCorsPreflightForUpload() {
-        ResponseBuilder res = Response.ok();
-        CorsHelper.enableCORS(authorizedOrigins, res, headers);
-        return res.build();
+        return Response.ok().build();
     }
 
     @POST
@@ -145,7 +138,6 @@ public class ScenariRoot extends ModuleRoot {
         importer.runUnrestricted();
         ResponseBuilder builder = Response.created(getImportScreenUrl(
                 session.getRepositoryName(), importer.documentRef));
-        CorsHelper.addCORSOrigin(authorizedOrigins, builder, headers);
         return builder.build();
     }
 
@@ -165,7 +157,6 @@ public class ScenariRoot extends ModuleRoot {
     @Path("/importscreen")
     public Response handleCorsPreflightForImportScreen() {
         ResponseBuilder res = Response.ok();
-        CorsHelper.enableCORS(authorizedOrigins, res, headers);
         return res.build();
     }
 

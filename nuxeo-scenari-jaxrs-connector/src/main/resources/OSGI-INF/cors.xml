@@ -1,0 +1,10 @@
+<component name="eu.scenari.cors">
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="corsConfig">
+
+    <corsConfig name="scenari">
+      <pattern>/nuxeo/site/scenari/.*</pattern>
+    </corsConfig>
+
+  </extension>
+</component>
