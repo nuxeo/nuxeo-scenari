@@ -45,6 +45,10 @@
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-jaxrs</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.orioai</groupId>
+      <artifactId>esupecm-orioai</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

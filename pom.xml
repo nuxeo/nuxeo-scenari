@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <nuxeo.version>5.7.1</nuxeo.version>
+    <nuxeo.version>5.7.2-SNAPSHOT</nuxeo.version>
   </properties>
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.7.1</version>
+    <version>5.7.2-SNAPSHOT</version>
   </parent>
 
   <groupId>eu.scenari</groupId>
@@ -38,7 +38,12 @@
       <dependency>
         <groupId>eu.scenari</groupId>
         <artifactId>nuxeo-scenari-jaxrs-connector</artifactId>
-        <version>${project.version}</version>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.orioai</groupId>
+        <artifactId>esupecm-orioai</artifactId>
+        <version>${nuxeo.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

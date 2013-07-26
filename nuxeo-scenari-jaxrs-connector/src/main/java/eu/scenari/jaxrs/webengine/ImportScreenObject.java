@@ -1,8 +1,14 @@
 package eu.scenari.jaxrs.webengine;
 
+import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
+import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
+import static org.nuxeo.ecm.core.versioning.VersioningService.VERSIONING_OPTION;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,12 +21,15 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -28,13 +37,9 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
+import org.orioai.esupecm.workflow.service.OriOaiWorkflowService;
 
 import eu.scenari.jaxrs.utils.ZipExploder;
-
-import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
-import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
-import static org.nuxeo.ecm.core.versioning.VersioningService.VERSIONING_OPTION;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -79,7 +84,8 @@ public class ImportScreenObject extends DefaultObject {
                 filtered.add(doc);
             }
         }
-        return filtered;
+
+        return filtered.size() == 0 ? null : filtered;
     }
 
     protected DocumentModelList getWritableWorkspaces() throws ClientException {
@@ -110,13 +116,19 @@ public class ImportScreenObject extends DefaultObject {
         args.put("workspaces", getWritableWorkspaces());
         args.put("sameScars", findSameArchivedScars());
 
+        OriOaiWorkflowService oaiWorkflowService = Framework.getLocalService(OriOaiWorkflowService.class);
+        String username = session.getPrincipal().getName();
+        args.put("metadataTypes", oaiWorkflowService.getMetadataTypes(username));
+
         return getView("import_screen").args(args);
     }
 
     @POST
     public Object getExplodeZipScreen(@FormParam("workspaceRef")
     String workspaceRef, @FormParam("scarRef")
-    String scarRef) throws ClientException, URISyntaxException, IOException {
+    String scarRef, @FormParam("workflowActionId")
+    String wkfActionId, @FormParam("publish")
+    String publish) throws ClientException, URISyntaxException, IOException {
         if (StringUtils.isBlank(workspaceRef + scarRef)) {
             log.error("Trying to confirm scar archive without any parameters.");
             return Response.notModified().build();
@@ -132,7 +144,69 @@ public class ImportScreenObject extends DefaultObject {
         String docUrl = getCodecManager().getUrlFromDocumentView(
                 new DocumentViewImpl(newDoc), true,
                 getContext().getBaseURL() + "/");
+
+        if (!StringUtils.isBlank(wkfActionId)) {
+            Map<String, Long> wkfIds = initWorkflowsPerBlob(
+                    newDoc.getAdapter(BlobHolder.class), wkfActionId);
+            if (!StringUtils.isBlank(publish)) {
+                processWorkflow(doc.getAdapter(BlobHolder.class), wkfActionId,
+                        wkfIds);
+            }
+        }
         return Response.created(new URI(docUrl)).build();
+    }
+
+    protected void processWorkflow(BlobHolder bh, String wkfActionId,
+            Map<String, Long> wkfIds) throws ClientException {
+        OriOaiWorkflowService service = Framework.getLocalService(OriOaiWorkflowService.class);
+        for (Blob blob : bh.getBlobs()) {
+            Long wkfId = wkfIds.get(blob.getFilename());
+            if (wkfId == null) {
+                continue;
+            }
+
+            String idp = service.getIdp(getUsername(), wkfId);
+            service.performAction(getUsername(), idp,
+                    Integer.parseInt(wkfActionId), "");
+        }
+    }
+
+    protected Map<String, Long> initWorkflowsPerBlob(BlobHolder bh, String publishActionId) throws ClientException {
+        OriOaiWorkflowService service = Framework.getLocalService(OriOaiWorkflowService.class);
+        Map<String, Long> ids = new HashMap<>();
+        for (Blob blob : bh.getBlobs()) {
+            // XXX Make test less stupid:)
+            if (blob.getFilename() == null || blob.getFilename().endsWith("xml")) {
+                continue;
+            }
+
+            Long value = service.newWorkflowInstance(getUsername(), publishActionId);
+            ids.put(blob.getFilename(), value);
+
+            String idp = service.getIdp(getUsername(), value); // XXX Should we have to save it or can we recreate it each time ?
+            service.saveXML(getUsername(), idp, buildXmlFromLomFile(bh, blob.getFilename()));
+        }
+        return ids;
+    }
+
+    private String buildXmlFromLomFile(BlobHolder bh, String filename)
+            throws ClientException {
+        String lom = FileUtils.getFileNameNoExt(filename) + ".lom.xml";
+        for (Blob blob : bh.getBlobs()) {
+            if (blob.getFilename().contains(lom)) {
+                return blob.toString();
+            }
+        }
+        return null;
+    }
+
+    private Map<Long, String> initIdps(Collection<Long> wfIds) {
+        OriOaiWorkflowService oaiWorkflowService = Framework.getLocalService(OriOaiWorkflowService.class);
+        Map<Long, String> idps = new HashMap<>();
+        for (Long id : wfIds) {
+            idps.put(id, oaiWorkflowService.getIdp(getUsername(), id));
+        }
+        return idps;
     }
 
     protected DocumentModel updateExistingScar(String scarRef)
@@ -165,8 +239,12 @@ public class ImportScreenObject extends DefaultObject {
         ZipExploder ze = getZipExplorer();
         DocumentModel newDoc = session.createDocument(ze.createDocumentModel(
                 doc, workspace));
-        session.checkIn(newDoc.getRef(), MAJOR, null);
+        DocumentRef versionRef = session.checkIn(newDoc.getRef(), MAJOR, null);
         session.removeDocument(doc.getRef());
-        return newDoc;
+        return session.getDocument(versionRef);
+    }
+
+    private String getUsername() {
+        return session.getPrincipal().getName();
     }
 }
