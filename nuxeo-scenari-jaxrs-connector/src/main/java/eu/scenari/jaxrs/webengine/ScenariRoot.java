@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
@@ -176,7 +177,7 @@ public class ScenariRoot extends ModuleRoot {
         protected final Principal principal;
 
         public ZipDocumentImporter(CoreSession session, Blob zipBlob) {
-            super(session.getRepositoryName());
+            super(session);
             this.principal = session.getPrincipal();
             this.blob = zipBlob;
         }

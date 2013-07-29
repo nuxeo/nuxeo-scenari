@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -159,7 +160,7 @@ public class ImportScreenObject extends DefaultObject {
 
         String docUrl = getCodecManager().getUrlFromDocumentView(
                 new DocumentViewImpl(newDoc), true,
-                getContext().getBaseURL() + "/");
+                VirtualHostHelper.getBaseURL(ctx.getRequest()));
 
         if (!StringUtils.isBlank(wkfActionId)) {
             Map<String, Long> wkfIds = initWorkflowsPerBlob(newDoc,
@@ -169,7 +170,8 @@ public class ImportScreenObject extends DefaultObject {
                         wkfIds);
             }
         }
-        return Response.created(new URI(docUrl)).build();
+
+        return redirect(docUrl);
     }
 
     protected void processWorkflow(BlobHolder bh, String wkfActionId,
