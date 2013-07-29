@@ -4,12 +4,18 @@ import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 import static org.nuxeo.ecm.core.versioning.VersioningService.VERSIONING_OPTION;
+import static org.nuxeo.ecm.platform.relations.api.util.RelationConstants.DOCUMENT_NAMESPACE;
+import static org.nuxeo.ecm.platform.relations.api.util.RelationConstants.GRAPH_NAME;
+import static org.orioai.esupecm.relations.OriOaiRelationActionsBean.RELATION_DC_REFERENCES;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.FormParam;
@@ -31,6 +37,16 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.relations.api.Literal;
+import org.nuxeo.ecm.platform.relations.api.Node;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
+import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.Statement;
+import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
+import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
+import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
+import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.webengine.model.ResourceType;
@@ -146,7 +162,7 @@ public class ImportScreenObject extends DefaultObject {
                 getContext().getBaseURL() + "/");
 
         if (!StringUtils.isBlank(wkfActionId)) {
-            Map<String, Long> wkfIds = initWorkflowsPerBlob(
+            Map<String, Long> wkfIds = initWorkflowsPerBlob(newDoc,
                     newDoc.getAdapter(BlobHolder.class), wkfActionId);
             if (!StringUtils.isBlank(publish)) {
                 processWorkflow(doc.getAdapter(BlobHolder.class), wkfActionId,
@@ -171,29 +187,51 @@ public class ImportScreenObject extends DefaultObject {
         }
     }
 
-    protected Map<String, Long> initWorkflowsPerBlob(BlobHolder bh, String publishActionId) throws ClientException {
+    protected Map<String, Long> initWorkflowsPerBlob(DocumentModel doc, BlobHolder bh, String wkfActionId) throws ClientException {
         OriOaiWorkflowService service = Framework.getLocalService(OriOaiWorkflowService.class);
+
         Map<String, Long> ids = new HashMap<>();
+        List<Statement> statements = new ArrayList<>();
         for (Blob blob : bh.getBlobs()) {
             // XXX Make test less stupid:)
             if (blob.getFilename() == null || blob.getFilename().endsWith("xml")) {
                 continue;
             }
 
-            Long value = service.newWorkflowInstance(getUsername(), publishActionId);
-            ids.put(blob.getFilename(), value);
+            Long wkfId = service.newWorkflowInstance(getUsername(), wkfActionId);
+            ids.put(blob.getFilename(), wkfId);
+            registerRelation(statements, doc, wkfId);
 
-            String idp = service.getIdp(getUsername(), value); // XXX Should we have to save it or can we recreate it each time ?
+            String idp = service.getIdp(getUsername(), wkfId); // XXX Should we have to save it or can we recreate it each time ?
             service.saveXML(getUsername(), idp, buildXmlFromLomFile(bh, blob.getFilename()));
         }
+
+        Framework.getLocalService(RelationManager.class).getGraph(GRAPH_NAME, session).add(statements);
+
         return ids;
+    }
+
+    protected void registerRelation(List<Statement> statements,
+            DocumentModel doc, Long wkfId) throws ClientException {
+        RelationManager relationManager = Framework.getLocalService(RelationManager.class);
+
+        Resource subject = relationManager.getResource(DOCUMENT_NAMESPACE, doc,
+                null);
+        Resource predicate = new ResourceImpl(RELATION_DC_REFERENCES);
+        Node object = new LiteralImpl(wkfId.toString());
+
+        Statement e = new StatementImpl(subject, predicate, object);
+        Literal now = RelationDate.getLiteralDate(new Date());
+        e.addProperty(RelationConstants.CREATION_DATE, now);
+        e.addProperty(RelationConstants.MODIFICATION_DATE, now);
+        statements.add(e);
     }
 
     private String buildXmlFromLomFile(BlobHolder bh, String filename)
             throws ClientException {
         String lom = FileUtils.getFileNameNoExt(filename) + ".lom.xml";
         for (Blob blob : bh.getBlobs()) {
-            if (blob.getFilename().contains(lom)) {
+            if (blob.getFilename() != null && blob.getFilename().contains(lom)) {
                 return blob.toString();
             }
         }
