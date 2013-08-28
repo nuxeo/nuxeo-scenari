@@ -9,7 +9,7 @@ import static org.nuxeo.ecm.platform.relations.api.util.RelationConstants.GRAPH_
 import static org.orioai.esupecm.relations.OriOaiRelationActionsBean.RELATION_DC_REFERENCES;
 
 import java.io.IOException;
-import java.net.URI;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +24,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
+import org.orioai.esupecm.nuxeo2xml.service.OriOaiNuxeo2XmlService;
 import org.orioai.esupecm.workflow.service.OriOaiWorkflowService;
 
 import eu.scenari.jaxrs.utils.ZipExploder;
@@ -205,7 +207,7 @@ public class ImportScreenObject extends DefaultObject {
             registerRelation(statements, doc, wkfId);
 
             String idp = service.getIdp(getUsername(), wkfId); // XXX Should we have to save it or can we recreate it each time ?
-            service.saveXML(getUsername(), idp, buildXmlFromLomFile(bh, blob.getFilename()));
+            service.saveXML(getUsername(), idp, buildXmlFromLomFile(doc.getId(), bh, blob.getFilename()));
         }
 
         Framework.getLocalService(RelationManager.class).getGraph(GRAPH_NAME, session).add(statements);
@@ -229,15 +231,40 @@ public class ImportScreenObject extends DefaultObject {
         statements.add(e);
     }
 
-    private String buildXmlFromLomFile(BlobHolder bh, String filename)
-            throws ClientException {
-        String lom = FileUtils.getFileNameNoExt(filename) + ".lom.xml";
+    private String buildXmlFromLomFile(String docId, BlobHolder bh,
+            String filename) throws ClientException {
+        String lom = FileUtils.getFileNameNoExt(filename) + "_lom.xml";
         for (Blob blob : bh.getBlobs()) {
             if (blob.getFilename() != null && blob.getFilename().contains(lom)) {
-                return blob.toString();
+                StringWriter sw = new StringWriter();
+                try {
+                    IOUtils.copy(blob.getReader(), sw);
+                    return replaceLink(docId, sw.toString());
+                } catch (IOException ignored) {
+                }
             }
         }
-        return null;
+        return "";
+    }
+
+    protected String replaceLink(String docId, String xml)
+            throws ClientException {
+        OriOaiNuxeo2XmlService serv = Framework.getLocalService(OriOaiNuxeo2XmlService.class);
+        String lomEntry = "<lom:entry>%s</lom:entry>";
+        String lomLocation = "<lom:location>%s</lom:location>";
+
+        xml = replacePattern(xml, lomEntry, serv.getLastVersionUrl() + docId
+                + "/file/$1");
+        xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId);
+
+        return xml;
+    }
+
+    protected static String replacePattern(String text, String sourceFormat,
+            String destinationURL) {
+        String regex = String.format(sourceFormat, "\\W*(\\S+)\\W*");
+        return text.replaceAll(regex,
+                String.format(sourceFormat, destinationURL));
     }
 
     private Map<Long, String> initIdps(Collection<Long> wfIds) {
