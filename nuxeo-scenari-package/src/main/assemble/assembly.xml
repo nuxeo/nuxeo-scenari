@@ -21,6 +21,20 @@
     <copy todir="${maven.project.build.directory}/marketplace/install/bundles">
       <artifact:resolveFile key="eu.scenari:nuxeo-scenari-jaxrs-connector::jar" />
       <artifact:resolveFile key="org.esup.ecm:esup-webengine-versions::jar" />
+
+      <!-- Wall dependencies -->
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-api::jar" />
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-core::jar" />
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-web::jar" />
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-gadget::jar" />
+
+      <artifact:resolveFile key="org.nuxeo.activity:nuxeo-activity::jar" />
+
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-mini-message::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-relationship::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-user-activity-stream::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-user-relationship::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-wall::jar" />
     </copy>
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
