@@ -20,6 +20,7 @@
 
     <copy todir="${maven.project.build.directory}/marketplace/install/bundles">
       <artifact:resolveFile key="eu.scenari:nuxeo-scenari-jaxrs-connector::jar" />
+      <artifact:resolveFile key="org.esup.ecm:esup-webengine-versions::jar" />
     </copy>
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"

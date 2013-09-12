@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -150,8 +151,8 @@ public class ScenariRoot extends ModuleRoot {
     }
 
     public String getModuleURL() {
-        return String.format("%s%s", getContext().getBaseURL(),
-                getContext().getModulePath());
+        return String.format("%s%s", VirtualHostHelper.getServerURL(request),
+                getContext().getModulePath().substring(1));
     }
 
     @OPTIONS
