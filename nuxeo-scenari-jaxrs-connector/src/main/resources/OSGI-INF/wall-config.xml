@@ -1,0 +1,36 @@
+<component name="eu.scenari.wall">
+  <require>org.nuxeo.ecm.wall.activity.stream.filters</require>
+
+
+  <!-- Add new Activity verb to get new version -->
+  <extension target="org.nuxeo.ecm.activity.ActivityStreamService"
+    point="activityVerbs">
+    <activityVerb verb="documentCheckedIn"
+      labelKey="label.activity.newVersionCreated"
+      icon="/icons/activity_document_creation.png" />
+  </extension>
+
+  <!-- Add listener to handle document's checkin -->
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="checkedInDocumentListener" async="true" postCommit="true"
+      class="eu.scenari.listener.CheckInStreamListener"
+      priority="100">
+      <event>documentCheckedIn</event>
+    </listener>
+
+  </extension>
+
+  <!-- Add contribution to wall -->
+  <extension target="org.nuxeo.ecm.activity.ActivityStreamService"
+    point="activityStreams">
+    <activityStream name="defaultWallActivityStream">
+      <verbs>
+        <verb>documentCreated</verb>
+        <verb>documentModified</verb>
+        <verb>documentCheckedIn</verb>
+        <verb>documentRemoved</verb>
+      </verbs>
+    </activityStream>
+  </extension>
+</component>
