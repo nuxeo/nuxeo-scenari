@@ -1,16 +1,20 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<cid:cid xmlns:cid='http://www.kelis.fr/cid/v1/core'>
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="file:/home/tha/dev/misc/cid/misc/cid-sc.rnc"
+type="compact"?>
+<cid:manifest xmlns:cid="http://www.kelis.fr/cid/v1/core">
   <cid:authentication>
     <cid:basicHttp testUrl="${This.moduleURL}"/>
   </cid:authentication>
   <cid:content>
-    <cid:simpleContent mymetype='*/*'/>
+    <scPolyDoc xmlns="http://www.scenari-platform.org/cid/v1/derivation" />
   </cid:content>
-  <cid:protocol>
-    <cid:singleHttpRequest method='POST' multipartField='upload' url='${This.zipUploadUrl}'>
-      <cid:negotiation>
-        <cid:frameweb/>
-      </cid:negotiation>
+  <cid:transport>
+    <cid:singleHttpRequest url="${This.zipUploadUrl}">
+      <cid:post multipartFileField="upload"
+        multipartTypeField="contentType" />
+      <cid:negociation>
+        <cid:frameWeb/>
+      </cid:negociation>
     </cid:singleHttpRequest>
-  </cid:protocol>
-</cid:cid>
+  </cid:transport>
+</cid:manifest>
