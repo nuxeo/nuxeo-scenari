@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?oxygen RNGSchema="file:/home/tha/dev/misc/cid/misc/cid-sc.rnc"
-type="compact"?>
 <cid:manifest xmlns:cid="http://www.kelis.fr/cid/v1/core">
   <cid:authentication>
     <cid:basicHttp testUrl="${This.moduleURL}"/>
