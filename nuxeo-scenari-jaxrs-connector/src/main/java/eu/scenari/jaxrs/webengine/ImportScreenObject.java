@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -167,10 +168,8 @@ public class ImportScreenObject extends DefaultObject {
         if (!StringUtils.isBlank(wkfActionId)) {
             Map<String, Long> wkfIds = initWorkflowsPerBlob(newDoc,
                     newDoc.getAdapter(BlobHolder.class), wkfActionId);
-            if (!StringUtils.isBlank(publish)) {
-                processWorkflow(doc.getAdapter(BlobHolder.class), wkfActionId,
-                        wkfIds);
-            }
+            processWorkflow(doc.getAdapter(BlobHolder.class), wkfActionId,
+                    wkfIds);
         }
 
         return redirect(docUrl);
@@ -255,7 +254,8 @@ public class ImportScreenObject extends DefaultObject {
 
         xml = replacePattern(xml, lomEntry, serv.getLastVersionUrl() + docId
                 + "/file/$1");
-        xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId);
+        xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId
+                + "/file/$1");
 
         return xml;
     }
@@ -296,7 +296,8 @@ public class ImportScreenObject extends DefaultObject {
         }
         DocumentModel updatedDoc = zipExplorer.updateDocumentModel(doc, oldScar);
         updatedDoc.putContextData(VERSIONING_OPTION, MAJOR);
-        return session.saveDocument(updatedDoc);
+
+        return session.getLastDocumentVersion(session.saveDocument(updatedDoc).getRef());
     }
 
     protected DocumentModel createDocumentModel(String workspaceRef)

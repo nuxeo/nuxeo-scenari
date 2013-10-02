@@ -23,8 +23,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 
 /**
- * 
- * 
+ *
+ *
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7
  */
@@ -37,6 +37,8 @@ public class ZipExploder {
     protected boolean exploded = false;
 
     protected final List<Map<String, Object>> otherBlobs = new ArrayList<Map<String, Object>>();
+
+    protected static final String RO_FACET = "ORI_READ_ONLY";
 
     private static final Log log = LogFactory.getLog(ZipExploder.class);
 
@@ -110,6 +112,7 @@ public class ZipExploder {
             targetDoc.setPropertyValue("file:content", (Serializable) scarBlob);
         }
         targetDoc.setPropertyValue("files:files", otherBlobs.toArray());
+        targetDoc.addFacet(RO_FACET);
 
         return targetDoc;
     }

@@ -53,10 +53,6 @@
           <option value="${metadataType.id}">${metadataType.label}</option>
         </#list>
       </select>
-      <p>
-        <input id="publish" type="checkbox" name="publish" disabled="disabled"/>
-        <label for="publish">Publier le workflow automatiquement ?</label>
-      </p>
       <hr />
       <div>
         <input id="submitForm" type="submit" value="Valider" />
