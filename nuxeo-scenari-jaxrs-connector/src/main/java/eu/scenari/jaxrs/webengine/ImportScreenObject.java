@@ -238,7 +238,7 @@ public class ImportScreenObject extends DefaultObject {
                 StringWriter sw = new StringWriter();
                 try {
                     IOUtils.copy(blob.getReader(), sw);
-                    return replaceLink(docId, sw.toString());
+                    return replaceLink(docId, sw.toString(), filename);
                 } catch (IOException ignored) {
                 }
             }
@@ -246,7 +246,7 @@ public class ImportScreenObject extends DefaultObject {
         return "";
     }
 
-    protected String replaceLink(String docId, String xml)
+    protected String replaceLink(String docId, String xml, String filename)
             throws ClientException {
         OriOaiNuxeo2XmlService serv = Framework.getLocalService(OriOaiNuxeo2XmlService.class);
         String lomEntry = "<lom:entry>%s</lom:entry>";
@@ -254,8 +254,14 @@ public class ImportScreenObject extends DefaultObject {
 
         xml = replacePattern(xml, lomEntry, serv.getLastVersionUrl() + docId
                 + "/file/$1");
-        xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId
-                + "/file/$1");
+
+        if (!filename.endsWith("zip")) {
+            xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId
+                    + "/file/$1");
+        } else {
+            xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId
+                    + "/file/" + filename + "/preview");
+        }
 
         return xml;
     }
