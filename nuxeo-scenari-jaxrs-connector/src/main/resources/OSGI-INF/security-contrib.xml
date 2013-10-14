@@ -1,0 +1,8 @@
+<component name="eu.scenari.security">
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+
+    <policy name="lock" class="eu.scenari.GuestSecurityPolicy" order="0" />
+
+  </extension>
+</component>
