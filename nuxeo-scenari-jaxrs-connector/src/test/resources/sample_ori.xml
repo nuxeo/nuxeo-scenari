@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lom:lom xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:lomfr="http://www.lom-fr.fr/xsd/LOMFR">
+
+  <lom:general>
+    <lom:identifier>
+      <lom:catalog>URI</lom:catalog>
+      <lom:entry>http://sup-e-educ.univ-amu.fr/uid/sup-e-educ-ori-29</lom:entry>
+    </lom:identifier>
+    <lom:title>
+      <lom:string language="fre" />
+    </lom:title>
+    <lom:language>fre</lom:language>
+    <lom:description>
+      <lom:string language="fre" />
+    </lom:description>
+    <lom:keyword>
+      <lom:string language="fre" />
+    </lom:keyword>
+    <lomfr:documentType>
+      <lomfr:source>LOMFRv1.0</lomfr:source>
+      <lomfr:value />
+    </lomfr:documentType>
+  </lom:general>
+  <lom:lifeCycle>
+    <lom:contribute>
+      <lom:role>
+        <lom:source>LOMv1.0</lom:source>
+        <lom:value>author</lom:value>
+      </lom:role>
+      <lom:entity />
+      <lom:date>
+        <lom:dateTime />
+      </lom:date>
+    </lom:contribute>
+    <lom:contribute>
+      <lom:role>
+        <lom:source>LOMv1.0</lom:source>
+        <lom:value>publisher</lom:value>
+      </lom:role>
+      <!-- SUP E-educ - Editeur par défaut -->
+      <lom:entity>
+        BEGIN:VCARD
+        VERSION:3.0
+        N:SUP E-educ;;;;
+        FN:SUP E-educ
+        EMAIL;TYPE=INTERNET:
+        ORG:SUP E-educ
+        END:VCARD
+      </lom:entity>
+      <!--  -->
+      <lom:date>
+        <lom:dateTime>2013-10-21</lom:dateTime>
+      </lom:date>
+    </lom:contribute>
+  </lom:lifeCycle>
+  <lom:metaMetadata>
+    <lom:identifier>
+      <lom:catalog>URI</lom:catalog>
+      <lom:entry>http://sup-e-educ.univ-amu.fr/uid/sup-e-educ-ori-30</lom:entry>
+    </lom:identifier>
+    <lom:metadataSchema>LOMv1.0</lom:metadataSchema>
+    <lom:metadataSchema>LOMFRv1.0</lom:metadataSchema>
+    <lom:metadataSchema>SupLOMFRv1.0</lom:metadataSchema>
+  </lom:metaMetadata>
+  <lom:technical>
+    <lom:format />
+    <lom:location />
+  </lom:technical>
+  <lom:educational>
+    <lom:learningResourceType>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value />
+    </lom:learningResourceType>
+    <lom:context>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>higher education</lom:value>
+    </lom:context>
+  </lom:educational>
+  <lom:rights>
+    <lom:cost>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value />
+    </lom:cost>
+    <lom:copyrightAndOtherRestrictions>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value />
+    </lom:copyrightAndOtherRestrictions>
+    <lom:description>
+      <lom:string language="fre" />
+    </lom:description>
+  </lom:rights>
+  <lom:classification>
+    <lom:purpose>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>discipline</lom:value>
+    </lom:purpose>
+    <lom:taxonPath>
+      <lom:source>
+        <lom:string language="fre">CDD 22e éd.</lom:string>
+      </lom:source>
+      <lom:taxon>
+        <lom:id />
+        <lom:entry>
+          <lom:string language="fre" />
+        </lom:entry>
+      </lom:taxon>
+    </lom:taxonPath>
+  </lom:classification>
+
+</lom:lom>

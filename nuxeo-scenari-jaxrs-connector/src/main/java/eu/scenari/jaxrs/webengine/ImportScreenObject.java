@@ -11,6 +11,7 @@ import static org.orioai.esupecm.relations.OriOaiRelationActionsBean.RELATION_DC
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -28,6 +29,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -59,6 +63,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.orioai.esupecm.nuxeo2xml.service.OriOaiNuxeo2XmlService;
 import org.orioai.esupecm.workflow.service.OriOaiWorkflowService;
 
+import com.phloc.commons.io.streams.StringInputStream;
+import com.phloc.commons.xml.sax.StringSAXInputSource;
+import eu.scenari.jaxrs.utils.SAXModifier;
 import eu.scenari.jaxrs.utils.ZipExploder;
 
 /**
@@ -202,11 +209,21 @@ public class ImportScreenObject extends DefaultObject {
             }
 
             Long wkfId = service.newWorkflowInstance(getUsername(), wkfActionId);
+
             ids.put(blob.getFilename(), wkfId);
             registerRelation(statements, doc, wkfId);
 
             String idp = service.getIdp(getUsername(), wkfId); // XXX Should we have to save it or can we recreate it each time ?
-            service.saveXML(getUsername(), idp, buildXmlFromLomFile(doc.getId(), bh, blob.getFilename()));
+            String xmlWF = service.getXMLForms(getUsername(), idp);
+            String xmlContent = buildXmlFromLomFile(doc.getId(), bh, blob.getFilename());
+
+            SAXModifier modifier = new SAXModifier(xmlWF, xmlContent);
+            modifier.moveNode("//lom:general/lom:identifier");
+            modifier.moveNode("//lom:metaMetadata", true);
+            modifier.moveNodes("//lom:contribute");
+            modifier.moveNode("//lom:classification");
+
+            service.saveXML(getUsername(), idp, modifier.buildTargetAsXml());
         }
 
         Framework.getLocalService(RelationManager.class).getGraph(GRAPH_NAME, session).add(statements);
@@ -254,14 +271,8 @@ public class ImportScreenObject extends DefaultObject {
 
         xml = replacePattern(xml, lomEntry, serv.getLastVersionUrl() + docId
                 + "/file/$1");
-
-        if (!filename.endsWith("zip")) {
-            xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId
-                    + "/file/$1");
-        } else {
-            xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId
-                    + "/file/" + filename + "/preview");
-        }
+        xml = replacePattern(xml, lomLocation, serv.getLastVersionUrl() + docId
+                + "/file/$1");
 
         return xml;
     }
@@ -269,8 +280,11 @@ public class ImportScreenObject extends DefaultObject {
     protected static String replacePattern(String text, String sourceFormat,
             String destinationURL) {
         String regex = String.format(sourceFormat, "\\W*(\\S+)\\W*");
-        return text.replaceAll(regex,
+        text = text.replaceAll(regex,
                 String.format(sourceFormat, destinationURL));
+        regex = String.format(sourceFormat, "\\W*(\\S+(?:zip))\\W*");
+        return text.replaceAll(regex,
+                String.format(sourceFormat, "$1/preview"));
     }
 
     private Map<Long, String> initIdps(Collection<Long> wfIds) {

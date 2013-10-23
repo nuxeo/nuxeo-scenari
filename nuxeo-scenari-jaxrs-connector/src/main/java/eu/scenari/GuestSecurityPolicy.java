@@ -19,6 +19,9 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 public class GuestSecurityPolicy extends AbstractSecurityPolicy {
+
+    protected String anonymousId = null;
+
     protected static List<String> PERMISSIONS = Arrays.asList(READ,
             READ_CHILDREN, READ_VERSION, READ_LIFE_CYCLE, BROWSE);
 
@@ -39,7 +42,10 @@ public class GuestSecurityPolicy extends AbstractSecurityPolicy {
 
     protected String anonymousId() {
         try {
-            return Framework.getLocalService(UserManager.class).getAnonymousUserId();
+            if (anonymousId == null) {
+                anonymousId = Framework.getLocalService(UserManager.class).getAnonymousUserId();
+            }
+            return anonymousId;
         } catch (ClientException e) {
             return null;
         }

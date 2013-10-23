@@ -1,0 +1,167 @@
+<lom:lom xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+  <lom:general xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:title>
+      <lom:string language="fre">Les comètes et l'espace</lom:string>
+    </lom:title>
+    <lom:language>fre</lom:language>
+    <lom:description>
+      <lom:string language="fre">A la fin de ce module vous devez avoir acquis une connaissance générale des comètes :
+        Vous pourrez notamment expliquer la distinction entre les comètes et les autres corps lumineux (météores,
+        étoiles filantes etc.), maîtriser le vocabulaire relatif aux comètes (coma, queue, périhélie), resituer les
+        grandes comètes dans l'histoire générale de l'astronomie de Tycho Brahé à Newton, être capable de rendre compte
+        synthétiquement du phénomène astrophysique des comètes (origine, évolutions et extinction).
+      </lom:string>
+    </lom:description>
+    <lom:keyword>
+      <lom:string language="fre">Astronomie</lom:string>
+    </lom:keyword>
+    <lom:keyword>
+      <lom:string language="fre">Astrophysique</lom:string>
+    </lom:keyword>
+    <lom:keyword>
+      <lom:string language="fre">Comètes</lom:string>
+    </lom:keyword>
+    <lom:keyword>
+      <lom:string language="fre">Système solaire</lom:string>
+    </lom:keyword>
+    <lom:keyword>
+      <lom:string language="fre">Copernic</lom:string>
+    </lom:keyword>
+    <lom:keyword>
+      <lom:string language="fre">Kepler</lom:string>
+    </lom:keyword>
+    <lom:keyword>
+      <lom:string language="fre">Newton</lom:string>
+    </lom:keyword>
+    <lom:structure>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>hierarchical</lom:value>
+    </lom:structure>
+    <lom:aggregationLevel>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>4</lom:value>
+    </lom:aggregationLevel>
+    <lomfr:documentType xmlns:lomfr="http://www.lom-fr.fr/xsd/LOMFR">
+      <lomfr:source>LOMFRv1.0</lomfr:source>
+      <lomfr:value>collection</lomfr:value>
+    </lomfr:documentType>
+  </lom:general>
+  <lom:lifeCycle xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:contribute>
+      <lom:role>
+        <lom:source>LOMv1.0</lom:source>
+        <lom:value>author</lom:value>
+      </lom:role>
+      <lom:entity>BEGIN:VCARD
+        VERSION:3.0
+        N:Jean Heyvaerts pour le cours / ICS pour les exercices et la composition du module / CERIMES pour les extraits
+        vidéos
+        FN:Jean Heyvaerts pour le cours / ICS pour les exercices et la composition du module / CERIMES pour les extraits
+        vidéos
+        END:VCARD
+      </lom:entity>
+      <lom:date>
+        <lom:dateTime>2013-09-12</lom:dateTime>
+      </lom:date>
+    </lom:contribute>
+    <lom:contribute>
+      <lom:role>
+        <lom:source>LOMv1.0</lom:source>
+        <lom:value>publisher</lom:value>
+      </lom:role>
+      <lom:entity>BEGIN:VCARD
+        VERSION:3.0
+        N:UTC
+        FN:UTC
+        END:VCARD
+      </lom:entity>
+      <lom:date>
+        <lom:dateTime>2013-09-12</lom:dateTime>
+      </lom:date>
+    </lom:contribute>
+  </lom:lifeCycle>
+  <lom:metaMetadata xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:metadataSchema>LOM v.1.0</lom:metadataSchema>
+    <lom:metadataSchema>LOMFR v.1.0</lom:metadataSchema>
+  </lom:metaMetadata>
+
+  <lom:technical>
+    <lom:format>text/html</lom:format>
+    <lom:location>cometes_diaporama.zip</lom:location>
+  </lom:technical>
+  <lom:educational xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:learningResourceType>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>lecture</lom:value>
+    </lom:learningResourceType>
+    <lom:intendedEndUserRole>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>learner</lom:value>
+    </lom:intendedEndUserRole>
+    <lom:context>
+      <lom:source>LOMFRv1.0</lom:source>
+      <lom:value>master</lom:value>
+    </lom:context>
+    <lom:context>
+      <lom:source>LOMFRv1.0</lom:source>
+      <lom:value>licence</lom:value>
+    </lom:context>
+    <lom:typicalLearningTime>
+      <lom:duration>PT1H30M</lom:duration>
+    </lom:typicalLearningTime>
+  </lom:educational>
+  <lom:rights xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:copyrightAndOtherRestrictions>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>yes</lom:value>
+    </lom:copyrightAndOtherRestrictions>
+    <lom:description>
+      <lom:string language="fre">Creative Commons Paternité, Partage des Conditions Initiales à l'Identique</lom:string>
+    </lom:description>
+  </lom:rights>
+  <lom:relation xmlns="scenari.eu:polydocument:1.0" xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:kind>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>hasformat</lom:value>
+    </lom:kind>
+    <lom:resource>
+      <lom:identifier>
+        <lom:catalog>URI</lom:catalog>cometes_web.zip
+      </lom:identifier>
+      <lom:description>
+        <lom:string language="fre">Version Web</lom:string>
+      </lom:description>
+    </lom:resource>
+  </lom:relation>
+  <lom:relation xmlns="scenari.eu:polydocument:1.0" xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:kind>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>hasformat</lom:value>
+    </lom:kind>
+    <lom:resource>
+      <lom:identifier>
+        <lom:catalog>URI</lom:catalog>cometes_papier.odt
+      </lom:identifier>
+      <lom:description>
+        <lom:string language="fre">Version ODT</lom:string>
+      </lom:description>
+    </lom:resource>
+  </lom:relation>
+  <lom:relation xmlns="scenari.eu:polydocument:1.0" xmlns:lom="http://ltsc.ieee.org/xsd/LOM">
+    <lom:kind>
+      <lom:source>LOMv1.0</lom:source>
+      <lom:value>isformatof</lom:value>
+    </lom:kind>
+    <lom:resource>
+      <lom:identifier>
+        <lom:catalog>URI</lom:catalog>
+        <lom:entry>module_Cometes.polydoc.scar
+
+        </lom:entry>
+      </lom:identifier>
+      <lom:description>
+        <lom:string language="fre">Sources Opale 3.5 au format archive Scenari</lom:string>
+      </lom:description>
+    </lom:resource>
+  </lom:relation>
+</lom:lom>
