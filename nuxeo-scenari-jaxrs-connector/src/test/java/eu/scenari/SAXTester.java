@@ -3,6 +3,7 @@ package eu.scenari;
 import static junit.framework.Assert.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.junit.Assert;
@@ -83,8 +85,14 @@ public class SAXTester {
         int afterSize = scenari.selectNodes("//lom:metadataSchema").size();
         Assert.assertTrue(afterSize == sourceBeforeSize);
 
+        // - lom:educational
+        int targetBeforeSize = ((Element)scenari.selectSingleNode("//lom:educational")).content().size();
+        sourceBeforeSize = ((Element)orioai.selectSingleNode("//lom:educational")).content().size();
+        SAXModifier.moveChildren(orioai, scenari, "//lom:educational");
+        assertEquals(targetBeforeSize + sourceBeforeSize, ((Element) scenari.selectSingleNode("//lom:educational")).content().size());
+
         // - lom:contribute(s)
-        int targetBeforeSize = scenari.selectNodes("//lom:contribute").size();
+        targetBeforeSize = scenari.selectNodes("//lom:contribute").size();
         sourceBeforeSize = orioai.selectNodes("//lom:contribute").size();
         assertTrue(sourceBeforeSize > 0);
         SAXModifier.moveNodes(orioai, scenari, "//lom:contribute");
@@ -95,6 +103,18 @@ public class SAXTester {
         assertNull(scenari.selectSingleNode("//lom:classification"));
         SAXModifier.moveNode(orioai, scenari, "//lom:classification", false);
         assertNotNull(scenari.selectSingleNode("//lom:classification"));
+    }
+
+    @Test
+    public void lomNamespace() {
+        Element oriRoot = orioai.getRootElement();
+        Element scenariRoot = scenari.getRootElement();
+        for(Object obj : oriRoot.additionalNamespaces()) {
+            Namespace namespace = (Namespace) obj;
+            scenariRoot.add(namespace);
+        }
+
+        assertEquals(oriRoot.additionalNamespaces().size(), scenariRoot.additionalNamespaces().size());
     }
 
     @Test

@@ -221,6 +221,7 @@ public class ImportScreenObject extends DefaultObject {
             modifier.moveNode("//lom:general/lom:identifier");
             modifier.moveNode("//lom:metaMetadata", true);
             modifier.moveNodes("//lom:contribute");
+            modifier.moveChildren("//lom:educational");
             modifier.moveNode("//lom:classification");
 
             service.saveXML(getUsername(), idp, modifier.buildTargetAsXml());

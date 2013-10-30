@@ -7,6 +7,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -31,15 +32,20 @@ public class SAXModifier {
                     defaultCharset()));
             this.target = reader.read(new StringInputStream(target,
                     defaultCharset()));
+            syncNamespaces();
         } catch (DocumentException e) {
             throw new ClientException(e);
         }
     }
 
     public SAXModifier(Document source, Document target) {
-
         this.source = source;
         this.target = target;
+        syncNamespaces();
+    }
+
+    protected void syncNamespaces() {
+        SAXModifier.syncNamespaces(source, target);
     }
 
     public void moveNodes(String xpathExpression) {
@@ -52,6 +58,10 @@ public class SAXModifier {
 
     public void moveNode(String xpathExpression, boolean deleteTargetNode) {
         SAXModifier.moveNode(source, target, xpathExpression, deleteTargetNode);
+    }
+
+    public void moveChildren(String xpathExpression) {
+        SAXModifier.moveChildren(source, target, xpathExpression);
     }
 
     public String buildTargetAsXml() {
@@ -70,6 +80,18 @@ public class SAXModifier {
                 targetElement.add(contribute.detach());
             }
         }
+    }
+
+    public static void syncNamespaces(Document source, Document target) {
+        for(Object obj : source.getRootElement().additionalNamespaces()) {
+            Namespace namespace = (Namespace) obj;
+            target.getRootElement().add(namespace);
+        }
+    }
+
+    public static void moveChildren(Document source, Document target, String xpathExpression) {
+        Element sourceElt = (Element) source.selectSingleNode(xpathExpression);
+        ((Element) target.selectSingleNode(xpathExpression)).appendContent(sourceElt);
     }
 
     public static void moveNode(Document source, Document target,
