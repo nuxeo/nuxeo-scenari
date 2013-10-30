@@ -44,10 +44,6 @@ public class SAXModifier {
         syncNamespaces();
     }
 
-    protected void syncNamespaces() {
-        SAXModifier.syncNamespaces(source, target);
-    }
-
     public void moveNodes(String xpathExpression) {
         SAXModifier.moveNodes(source, target, xpathExpression);
     }
@@ -65,7 +61,12 @@ public class SAXModifier {
     }
 
     public String buildTargetAsXml() {
+        SAXModifier.cleanNamespaces(target);
         return target.asXML();
+    }
+
+    protected void syncNamespaces() {
+        SAXModifier.syncNamespaces(source, target);
     }
 
     public static void moveNodes(Document source, Document target,
@@ -112,5 +113,26 @@ public class SAXModifier {
         }
 
         ((Element) targetNode).add(node.detach());
+    }
+
+    public static void cleanNamespaces(Document source) {
+        cleanNamespaces(source.getRootElement().content());
+    }
+
+    protected static void cleanNamespaces(List content) {
+        for(Object obj : content) {
+            if (obj instanceof Element) {
+                Element elt = (Element) obj;
+
+                for (Object nso : elt.declaredNamespaces()) {
+                    Namespace ns = (Namespace) nso;
+                    elt.remove(ns);
+                }
+
+                if (elt.hasContent()) {
+                    cleanNamespaces(elt.content());
+                }
+            }
+        }
     }
 }

@@ -123,4 +123,14 @@ public class SAXTester {
         modifier.moveNode("//lom:general/lom:identifier");
         assertNotSame(scenari.asXML(), modifier.buildTargetAsXml());
     }
+
+    @Test
+    public void cleanAllNamespaces() {
+        String baseXml = scenari.getRootElement().asXML();
+
+        SAXModifier.syncNamespaces(orioai, scenari);
+        SAXModifier.cleanNamespaces(scenari);
+
+        assertNotSame(baseXml, scenari.getRootElement().asXML());
+    }
 }
