@@ -1,0 +1,30 @@
+<component name="eu.scenari.auth.chain.specific">
+  <extension point="specificChains" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <specificAuthenticationChain name="ScenariUpload">
+      <urlPatterns>
+        <url>.*/site/scenari/upload</url>
+      </urlPatterns>
+      <replacementChain>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>UNAUTHORIZED</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+    <specificAuthenticationChain name="Scenari">
+      <urlPatterns>
+        <url>.*/site/scenari/importscreen/.*</url>
+      </urlPatterns>
+      <replacementChain>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>CAS2_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
+    <authenticationPlugin name="UNAUTHORIZED" enabled="true"
+      class="eu.scenari.NotAuthorized">
+    </authenticationPlugin>
+  </extension>
+</component>

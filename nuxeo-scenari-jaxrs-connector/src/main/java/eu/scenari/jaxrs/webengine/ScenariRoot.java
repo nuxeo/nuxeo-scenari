@@ -17,6 +17,7 @@
 
 package eu.scenari.jaxrs.webengine;
 
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 
 import java.io.IOException;
@@ -140,6 +141,7 @@ public class ScenariRoot extends ModuleRoot {
         importer.runUnrestricted();
         ResponseBuilder builder = Response.created(getImportScreenUrl(
                 session.getRepositoryName(), importer.documentRef));
+        //builder.status(UNAUTHORIZED);
         return builder.build();
     }
 

@@ -4,6 +4,11 @@
 
     <corsConfig name="scenari">
       <pattern>/nuxeo/site/scenari/.*</pattern>
+      <replacementChain>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>CAS2_AUTH</plugin>
+      </replacementChain>
     </corsConfig>
 
   </extension>

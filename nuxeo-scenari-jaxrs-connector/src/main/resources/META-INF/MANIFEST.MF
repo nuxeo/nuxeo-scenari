@@ -8,4 +8,5 @@ Bundle-Version: 5.7-I20130122_0116
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: nuxeo-scenari-jaxrs-connector;singleton:=true
 Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=scenari;package=eu/scenari/jaxrs
-Nuxeo-Component: OSGI-INF/openurl.xml, OSGI-INF/cors.xml, OSGI-INF/wall-config.xml, OSGI-INF/security-contrib.xml
+Nuxeo-Component: OSGI-INF/openurl.xml, OSGI-INF/cors.xml, OSGI-INF/wall-config.xml,
+ OSGI-INF/security-contrib.xml, OSGI-INF/specific-chain-contrib.xml
