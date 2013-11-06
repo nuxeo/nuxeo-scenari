@@ -1,4 +1,6 @@
 <component name="eu.scenari.auth.chain.specific">
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+
   <extension point="specificChains" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
     <specificAuthenticationChain name="ScenariUpload">
       <urlPatterns>
@@ -6,7 +8,6 @@
       </urlPatterns>
       <replacementChain>
         <plugin>BASIC_AUTH</plugin>
-        <plugin>UNAUTHORIZED</plugin>
       </replacementChain>
     </specificAuthenticationChain>
 
@@ -22,9 +23,16 @@
     </specificAuthenticationChain>
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
-    <authenticationPlugin name="UNAUTHORIZED" enabled="true"
-      class="eu.scenari.NotAuthorized">
+  <!-- make sure no redirect for authentication happens -->
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="BASIC_AUTH"
+      enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <parameters>
+        <parameter name="ForcePromptURL_ScenariUpload">site/scenari/upload</parameter>
+      </parameters>
     </authenticationPlugin>
   </extension>
 </component>
