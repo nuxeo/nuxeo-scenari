@@ -14,10 +14,11 @@
   <production-state>testing</production-state>
   <supported>true</supported>
   <platforms>
-    <platform>cap-5.6</platform>
+    <platform>cap-5.8</platform>
   </platforms>
   <dependencies>
-    <package>nuxeo-dm:5.6.0</package>
+    <package>nuxeo-dm:5.8.0</package>
+    <package>nuxeo-orioai:1.0.0</package>
   </dependencies>
   <license>Nuxeo</license>
   <license-url></license-url>

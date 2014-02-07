@@ -1,3 +1,7 @@
 <install>
   <update file="${package.root}/install/bundles" todir="${env.bundles}" />
+  <copy dir="${package.root}/templates" todir="${env.templates}"
+      overwrite="false" />
+  <!-- Optional: use it if you need your MP to activate the dedicated template -->
+  <config addtemplate="activity" />
 </install>
