@@ -4,13 +4,13 @@
   <parent>
     <groupId>eu.scenari</groupId>
     <artifactId>nuxeo-scenari-parent</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-scenari-package</artifactId>
   <packaging>zip</packaging>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <name>Nuxeo Scenari connector - Marketplace package</name>
 
   <build>
